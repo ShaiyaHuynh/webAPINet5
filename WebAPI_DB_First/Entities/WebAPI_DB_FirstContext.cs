@@ -25,14 +25,14 @@ namespace WebAPI_DB_First.Entities
         public virtual DbSet<SanBay> SanBays { get; set; }
         public virtual DbSet<TinhTrang> TinhTrangs { get; set; }
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=WebAPI_DB_First;Integrated Security=True");
-//            }
-//        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        //        optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=WebAPI_DB_First;Integrated Security=True");
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,7 +41,7 @@ namespace WebAPI_DB_First.Entities
             modelBuilder.Entity<ChiTietChuyenBay>(entity =>
             {
                 entity.HasKey(e => e.MaChiTiet)
-                    .HasName("PK__ChiTietC__CDF0A1147C0FF317");
+                    .HasName("PK__ChiTietC__CDF0A114D7F61BD6");
 
                 entity.ToTable("ChiTietChuyenBay");
 
@@ -77,11 +77,11 @@ namespace WebAPI_DB_First.Entities
             modelBuilder.Entity<ChuyenBay>(entity =>
             {
                 entity.HasKey(e => e.MaChuyenBay)
-                    .HasName("PK__ChuyenBa__9B5036A3DB1B0A5A");
+                    .HasName("PK__ChuyenBa__9B5036A3D8FD9D1E");
 
                 entity.ToTable("ChuyenBay");
 
-                entity.HasIndex(e => new { e.MaSanBayFrom, e.MaSanBayTo, e.ThoiGianKhoiKhanh }, "index_ChuyenBay");
+                entity.HasIndex(e => new { e.MaSanBayFrom, e.MaSanBayTo, e.ThoiGianKhoiHanh }, "index_ChuyenBay");
 
                 entity.Property(e => e.MaChuyenBay).HasMaxLength(10);
 
@@ -101,9 +101,9 @@ namespace WebAPI_DB_First.Entities
                     .IsRequired()
                     .HasMaxLength(10);
 
-                entity.Property(e => e.ThoiGianKetThuc).HasColumnType("smalldatetime");
+                entity.Property(e => e.NgayKetThuc).HasColumnType("smalldatetime");
 
-                entity.Property(e => e.ThoiGianKhoiKhanh).HasColumnType("smalldatetime");
+                entity.Property(e => e.NgayKhoiHanh).HasColumnType("smalldatetime");
 
                 entity.HasOne(d => d.MaSanBayFromNavigation)
                     .WithMany(p => p.ChuyenBayMaSanBayFromNavigations)
@@ -127,7 +127,7 @@ namespace WebAPI_DB_First.Entities
             modelBuilder.Entity<DonHang>(entity =>
             {
                 entity.HasKey(e => e.MaDonHang)
-                    .HasName("PK__DonHang__129584ADB66DCF69");
+                    .HasName("PK__DonHang__129584AD7C88ABE1");
 
                 entity.ToTable("DonHang");
 
@@ -161,7 +161,7 @@ namespace WebAPI_DB_First.Entities
             modelBuilder.Entity<HangGhe>(entity =>
             {
                 entity.HasKey(e => e.Ma)
-                    .HasName("PK__HangGhe__3214CC9FEC163F1F");
+                    .HasName("PK__HangGhe__3214CC9FD600D735");
 
                 entity.ToTable("HangGhe");
 
@@ -177,7 +177,7 @@ namespace WebAPI_DB_First.Entities
             modelBuilder.Entity<NguoiDung>(entity =>
             {
                 entity.HasKey(e => e.Email)
-                    .HasName("PK__NguoiDun__AB6E6165DDF6DFD4");
+                    .HasName("PK__NguoiDun__AB6E616503BA2D16");
 
                 entity.ToTable("NguoiDung");
 
@@ -197,7 +197,7 @@ namespace WebAPI_DB_First.Entities
             modelBuilder.Entity<SanBay>(entity =>
             {
                 entity.HasKey(e => e.Ma)
-                    .HasName("PK__SanBay__3214CC9F9FFE3F9A");
+                    .HasName("PK__SanBay__3214CC9FF936E4FD");
 
                 entity.ToTable("SanBay");
 
@@ -213,7 +213,7 @@ namespace WebAPI_DB_First.Entities
             modelBuilder.Entity<TinhTrang>(entity =>
             {
                 entity.HasKey(e => e.MaTinhTrang)
-                    .HasName("PK__TinhTran__89F8F6699D095E7C");
+                    .HasName("PK__TinhTran__89F8F669C46FC112");
 
                 entity.ToTable("TinhTrang");
 

@@ -18,7 +18,7 @@ namespace WebAPI_DB_First.InterfaceDefines
         }
         
         // Lay tat ca thong tin
-       public  List<ChuyenBayVM> GetALL()
+        public  List<ChuyenBayVM> GetALL()
         {
             return _context.ChuyenBays.Select(obj => new ChuyenBayVM(obj)).ToList();
         }
@@ -29,7 +29,7 @@ namespace WebAPI_DB_First.InterfaceDefines
             var chuyenbay = _context.ChuyenBays.SingleOrDefault(_object => _object.MaChuyenBay == maChuyenBay);
             if (chuyenbay != null)
             {
-                return new ChuyenBayView(chuyenbay);
+                return new ChuyenBayVM(chuyenbay);
             }
             return null;
         }
@@ -71,6 +71,43 @@ namespace WebAPI_DB_First.InterfaceDefines
             _context.SaveChanges();
 
             return GetByMa(chuyenBay.MaChuyenBay);
+        }
+
+        public List<ChuyenBayVM> GetByCondition(ChuyenBayVM condition, int orderKey, int ascOrDesc)
+        {
+            var _all = _context.ChuyenBays.Where(_obj => !_obj.FlgDel && _obj.TongSoGhe > 0);
+            #region Filter
+            if (!string.IsNullOrEmpty(condition.GhiChu))
+            {
+                _all.Where(_where => _where.GhiChu.Contains(condition.GhiChu));
+            }
+            if (!string.IsNullOrEmpty(condition.MaChuyenBay))
+            {
+                _all.Where(_where => _where.MaChuyenBay.Equals(condition.MaChuyenBay));
+            }
+            if (!string.IsNullOrEmpty(condition.MaMayBay))
+            {
+                _all.Where(_where => _where.MaMayBay.Equals(condition.MaMayBay));
+            }
+            if (!condition.MaSanBayFrom.Equals(string.Empty))
+            {
+                _all.Where(_where => _where.MaSanBayFrom.Equals(condition.MaSanBayFrom));
+            }
+            if (!condition.MaSanBayTo.Equals(string.Empty))
+            {
+                _all.Where(_where => _where.MaSanBayTo.Equals(condition.MaSanBayTo));
+            }
+            if (condition.NgayKhoiHanh != null)
+            {
+                _all.Where(_where => _where.NgayKhoiHanh == condition.NgayKhoiHanh);
+            }
+            #endregion
+
+            #region Sorting
+            //_all.OrderByDescending(_order => _order.ThoiGianKhoiKhanh)
+            #endregion
+
+            return _all.Select(_obj => new ChuyenBayVM(_obj)).ToList();
         }
     }
 }
