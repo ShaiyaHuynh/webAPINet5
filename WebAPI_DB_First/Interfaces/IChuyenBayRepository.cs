@@ -10,7 +10,7 @@ namespace WebAPI_DB_First.Interfaces
     {
         List<ChuyenBayVM> GetALL();
         ChuyenBayVM GetByMa(string maChuyenBay);
-        List<ChuyenBayVM> GetByCondition(ChuyenBayVM condition, int orderKey, int ascOrDesc);
+        object GetByCondition(ChuyenBayVM condition, int orderKey, int ascOrDesc, int page, int rowOfPage);
         ChuyenBayVM Add(ChuyenBayVM chuyenBay);
         ChuyenBayVM Update(ChuyenBayVM chuyenBay);
         void Delete(string maChuyenBay);

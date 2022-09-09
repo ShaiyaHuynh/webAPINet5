@@ -12,9 +12,9 @@ namespace WebAPI_DB_First.Models
         public string MaSanBayFrom { get; set; }
         public string MaSanBayTo { get; set; }
         public DateTime? NgayKhoiHanh { get; set; }
-        public DateTime NgayKetThuc { get; set; }
-        public TimeSpan ThoiGianKhoiHanh { get; set; }
-        public TimeSpan ThoiGianKetThuc { get; set; }
+        public DateTime? NgayKetThuc { get; set; }
+        public string ThoiGianKhoiHanh { get; set; }
+        public string ThoiGianKetThuc { get; set; }
         public int TongSoGhe { get; set; }
         public int TinhTrang { get; set; }
         public string GhiChu { get; set; }
@@ -24,7 +24,7 @@ namespace WebAPI_DB_First.Models
         public string SanBayToName { get; set; }  
         public string TinhTrangName { get; set; }
 
-        public ChuyenBayVM(Entities.ChuyenBay chuyenbayEntity)
+        public ChuyenBayVM ConvertToViewModel(Entities.ChuyenBay chuyenbayEntity)
         {
             this.MaChuyenBay = chuyenbayEntity.MaChuyenBay;
             this.MaMayBay = chuyenbayEntity.MaMayBay;
@@ -38,9 +38,10 @@ namespace WebAPI_DB_First.Models
             this.TinhTrang = chuyenbayEntity.TinhTrang;
             this.TinhTrangName = chuyenbayEntity.TinhTrangNavigation.TenTinhTrang;
             this.GhiChu = chuyenbayEntity.GhiChu;
+            return this;
         }
 
-        public Entities.ChuyenBay ConvertToEntity()
+        public Entities.ChuyenBay ConvertToEntity() 
         {
             return new Entities.ChuyenBay
             {
@@ -49,6 +50,8 @@ namespace WebAPI_DB_First.Models
                 MaSanBayFrom = this.MaSanBayFrom,
                 MaSanBayTo = this.MaSanBayTo,
                 NgayKhoiHanh = this.NgayKhoiHanh.Value,
+                NgayKetThuc =  this.NgayKetThuc.Value,
+                ThoiGianKhoiHanh = this.ThoiGianKhoiHanh,
                 ThoiGianKetThuc = this.ThoiGianKetThuc,
                 TongSoGhe = this.TongSoGhe,
                 TinhTrang = this.TinhTrang,

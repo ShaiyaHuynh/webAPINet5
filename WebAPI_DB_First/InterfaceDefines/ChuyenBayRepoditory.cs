@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,16 +21,20 @@ namespace WebAPI_DB_First.InterfaceDefines
         // Lay tat ca thong tin
         public  List<ChuyenBayVM> GetALL()
         {
-            return _context.ChuyenBays.Select(obj => new ChuyenBayVM(obj)).ToList();
+            return _context.ChuyenBays.Select(obj => (new ChuyenBayVM()).ConvertToViewModel(obj)).ToList();
         }
 
         // Lay thong tin theo ma
         public ChuyenBayVM GetByMa(string maChuyenBay)
         {
-            var chuyenbay = _context.ChuyenBays.SingleOrDefault(_object => _object.MaChuyenBay == maChuyenBay);
+            var chuyenbay = _context.ChuyenBays
+                .Include("MaSanBayFromNavigation")
+                .Include("MaSanBayToNavigation")
+                .Include("TinhTrangNavigation")
+                .SingleOrDefault(_object => _object.MaChuyenBay == maChuyenBay);
             if (chuyenbay != null)
             {
-                return new ChuyenBayVM(chuyenbay);
+                return (new ChuyenBayVM()).ConvertToViewModel(chuyenbay);
             }
             return null;
         }
@@ -73,41 +78,96 @@ namespace WebAPI_DB_First.InterfaceDefines
             return GetByMa(chuyenBay.MaChuyenBay);
         }
 
-        public List<ChuyenBayVM> GetByCondition(ChuyenBayVM condition, int orderKey, int ascOrDesc)
+        public object GetByCondition(ChuyenBayVM condition, int orderKey, int ascOrDesc, int page, int rowOfPage)
         {
-            var _all = _context.ChuyenBays.Where(_obj => !_obj.FlgDel && _obj.TongSoGhe > 0);
+            //var _all = _context.ChuyenBays.Include(ct=>ct.ChiTietChuyenBays).Where(_obj => !_obj.FlgDel && _obj.TongSoGhe > 0)
+            var _all = _context.ChuyenBays.Where(_obj => !_obj.FlgDel && _obj.TongSoGhe > 0)
+                       .AsQueryable();
+
             #region Filter
             if (!string.IsNullOrEmpty(condition.GhiChu))
             {
-                _all.Where(_where => _where.GhiChu.Contains(condition.GhiChu));
+                _all = _all.Where(_where => _where.GhiChu.Contains(condition.GhiChu));
             }
             if (!string.IsNullOrEmpty(condition.MaChuyenBay))
             {
-                _all.Where(_where => _where.MaChuyenBay.Equals(condition.MaChuyenBay));
+                _all = _all.Where(_where => _where.MaChuyenBay.Equals(condition.MaChuyenBay));
             }
             if (!string.IsNullOrEmpty(condition.MaMayBay))
             {
-                _all.Where(_where => _where.MaMayBay.Equals(condition.MaMayBay));
+                _all = _all.Where(_where => _where.MaMayBay.Equals(condition.MaMayBay));
             }
             if (!condition.MaSanBayFrom.Equals(string.Empty))
             {
-                _all.Where(_where => _where.MaSanBayFrom.Equals(condition.MaSanBayFrom));
+                _all = _all.Where(_where => _where.MaSanBayFrom.Equals(condition.MaSanBayFrom));
             }
             if (!condition.MaSanBayTo.Equals(string.Empty))
             {
-                _all.Where(_where => _where.MaSanBayTo.Equals(condition.MaSanBayTo));
+                _all = _all.Where(_where => _where.MaSanBayTo.Equals(condition.MaSanBayTo));
             }
             if (condition.NgayKhoiHanh != null)
             {
-                _all.Where(_where => _where.NgayKhoiHanh == condition.NgayKhoiHanh);
+                _all = _all.Where(_where => _where.NgayKhoiHanh == condition.NgayKhoiHanh);
             }
             #endregion
 
-            #region Sorting
-            //_all.OrderByDescending(_order => _order.ThoiGianKhoiKhanh)
+            #region Select
+            var result = from _chuyenbay in _all
+                         from _chitietchuyenbay in _chuyenbay.ChiTietChuyenBays
+                         where _chitietchuyenbay.SoGhe > 0
+                         select new
+                         {
+                             MaChuyenBay = _chuyenbay.MaChuyenBay,
+                             MaChiTietChuyenBay = _chitietchuyenbay.MaChiTiet,
+                             SanBayFrom = _chuyenbay.MaSanBayFromNavigation.Ten,
+                             SanBayTo = _chuyenbay.MaSanBayToNavigation.Ten,
+                             NgayBatDau = _chuyenbay.NgayKhoiHanh,
+                             ThoiGianKhoiHanh = _chuyenbay.ThoiGianKhoiHanh,
+                             Gia = _chitietchuyenbay.Gia,
+                             SoGheConLai = _chitietchuyenbay.SoGhe
+                         };
             #endregion
 
-            return _all.Select(_obj => new ChuyenBayVM(_obj)).ToList();
+            #region Sorting
+            result = result.OrderBy(order => order.ThoiGianKhoiHanh);
+            // TH sap xep giam dan
+            if (ascOrDesc == 1)
+            {
+                // TH  = 1 : sx theo gia
+                if (orderKey == 1)
+                {
+                    //_all = _all
+                    result = result.OrderByDescending(order => order.Gia);
+                }
+                // Theo gio
+                else if (orderKey == 2)
+                {
+                    //_all = _all
+                    result = result.OrderByDescending(order => order.ThoiGianKhoiHanh);
+                }
+            }
+            else
+            {
+                // TH  = 1 : sx theo gia
+                if (orderKey == 1)
+                {
+                    //_all = _all
+                    result = result.OrderBy(order => order.Gia);
+                }
+                // Theo gio
+                else if (orderKey == 2)
+                {
+                    //_all = _all
+                    result = result.OrderBy(order => order.ThoiGianKhoiHanh);
+                }
+            }
+            #endregion
+
+            #region Paging
+            result = result.Skip((page - 1) * rowOfPage).Take(rowOfPage);
+            #endregion
+
+            return result.ToList();
         }
     }
 }

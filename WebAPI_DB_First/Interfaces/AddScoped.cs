@@ -12,7 +12,7 @@ namespace WebAPI_DB_First.Interfaces
         public static void AddScoped(ref IServiceCollection iService)
         {
             iService.AddScoped<ISanBayRepository, SanBayRepoditory>();
-            //iService.AddScoped<IChuyenBayRepository, ChuyenBayRepository>();
+            iService.AddScoped<IChuyenBayRepository, ChuyenBayRepoditory>();
         }
     }
 }

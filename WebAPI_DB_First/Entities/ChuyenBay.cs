@@ -18,8 +18,8 @@ namespace WebAPI_DB_First.Entities
         public string MaSanBayTo { get; set; }
         public DateTime NgayKhoiHanh { get; set; }
         public DateTime NgayKetThuc { get; set; }
-        public TimeSpan ThoiGianKhoiHanh { get; set; }
-        public TimeSpan ThoiGianKetThuc { get; set; }
+        public string ThoiGianKhoiHanh { get; set; }
+        public string ThoiGianKetThuc { get; set; }
         public int TongSoGhe { get; set; }
         public int TinhTrang { get; set; }
         public string GhiChu { get; set; }
